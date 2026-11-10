@@ -32,6 +32,12 @@ For an existing **ReStyleather Drizzle database**, back up the database and comp
 
 The storefront can browse sample products without PostgreSQL. Checkout and the dashboard require a database. Checkout currently accepts cash on delivery. The dashboard saves the preferred courier and whether it is enabled. Booking parcels and receiving courier tracking events require a separate provider integration.
 
+## Deploy on Coolify
+
+Select **Dockerfile** as the build strategy, use `/` as the base directory, and set the Dockerfile location to `/Dockerfile`. Route the HTTPS domain to internal port `3000`. Leave custom install, build, and start commands blank so the Dockerfile controls those steps.
+
+Set `DATABASE_URL` at runtime to the private PostgreSQL URL from the same Coolify destination. Set `APP_ORIGIN` and `STOREFRONT_URL` to the public HTTPS origin and make them available during build and at runtime. Next.js forwards API calls to Hono on `127.0.0.1:3001` by default. The container applies pending migrations before starting both workspaces. After deployment, check `/api/health` for `{"ok":true}`.
+
 ## API
 
 Staff can manage products, orders, and coupons and read shipping and courier settings. Administrators can also manage staff accounts and change settings. Turning off an account or resetting its password revokes its sessions.

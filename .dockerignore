@@ -1,0 +1,17 @@
+.git
+**/.env*
+**/node_modules
+**/.next
+**/*.tsbuildinfo
+frend/next-env.d.ts
+bend/src/generated/prisma
+**/coverage
+**/*.log
+**/*.pem
+**/*.key
+**/*.p12
+**/*.pfx
+**/*.db
+**/*.sqlite*
+**/*.dump
+**/*.backup
