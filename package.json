@@ -1,0 +1,24 @@
+{
+  "name": "restyleather-ecom",
+  "private": true,
+  "workspaces": [
+    "frend",
+    "bend"
+  ],
+  "scripts": {
+    "dev": "concurrently --kill-others --names bend,frend \"npm run dev --workspace bend\" \"npm run dev --workspace frend\"",
+    "build": "npm run build --workspace bend && npm run build --workspace frend",
+    "start": "concurrently --kill-others --names bend,frend \"npm run start --workspace bend\" \"npm run start --workspace frend\"",
+    "lint": "eslint .",
+    "typecheck": "npm run db:generate && npm run typecheck --workspaces",
+    "db:generate": "npm run db:generate --workspace bend",
+    "db:migrate": "npm run db:migrate --workspace bend",
+    "db:seed": "npm run db:seed --workspace bend",
+    "admin:create": "npm run admin:create --workspace bend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.6"
+  }
+}

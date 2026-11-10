@@ -1,0 +1,31 @@
+# Dependencies and build output
+node_modules/
+.next/
+out/
+dist/
+coverage/
+*.tsbuildinfo
+/frend/next-env.d.ts
+/bend/src/generated/prisma/
+
+# Local environment and credentials
+.env*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+.aws/
+.codex/
+
+# Local databases, backups, and logs
+*.db
+*.sqlite
+*.sqlite3
+*.dump
+*.backup
+*.log
+
+# OS metadata
+.DS_Store
+Thumbs.db

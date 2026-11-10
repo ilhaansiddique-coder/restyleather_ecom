@@ -1,0 +1,2 @@
+ALTER TABLE "products"
+ADD COLUMN "stock_quantity" INTEGER CHECK ("stock_quantity" >= 0);

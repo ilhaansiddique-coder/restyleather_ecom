@@ -1,0 +1,192 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Product {
+  id             Int      @id @default(autoincrement())
+  slug           String   @unique(map: "products_slug_unique")
+  title          String
+  bengaliTitle   String   @map("bengali_title")
+  category       String
+  price          Int
+  compareAtPrice Int?     @map("compare_at_price")
+  description    String
+  leatherType    String   @map("leather_type")
+  images         Json
+  colors         Json
+  dimensions     String?
+  warranty       String?  @default("6-Month Artisan Stitch & Hardware Warranty")
+  features       Json
+  inStock        Boolean  @default(true) @map("in_stock")
+  stockQuantity  Int?     @map("stock_quantity")
+  featured       Boolean  @default(false)
+  rating         String   @default("4.9")
+  reviewCount    Int      @default(38) @map("review_count")
+  sku            String
+  createdAt      DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@map("products")
+}
+
+model Order {
+  id            Int      @id @default(autoincrement())
+  trackingCode  String   @unique(map: "orders_tracking_code_unique") @map("tracking_code")
+  requestKey    String?  @unique @map("request_key")
+  requestHash   String?  @map("request_hash")
+  customerName  String   @map("customer_name")
+  phone         String
+  email         String?
+  address       String
+  district      String
+  division      String
+  deliveryFee   Int      @map("delivery_fee")
+  paymentMethod String   @map("payment_method")
+  orderStatus   String   @default("processing") @map("order_status")
+  items         Json
+  subtotal      Int
+  total         Int
+  discount      Int      @default(0)
+  couponCode    String?  @map("coupon_code")
+  notes         String?
+  createdAt     DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+  branchId      Int?     @map("branch_id")
+  branch        Branch?  @relation(fields: [branchId], references: [id])
+
+  @@index([branchId])
+  @@map("orders")
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  productId Int      @map("product_id")
+  author    String
+  city      String
+  rating    Int
+  comment   String
+  verified  Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamp(6)
+
+  @@map("reviews")
+}
+
+model User {
+  id           Int       @id @default(autoincrement())
+  email        String    @unique
+  name         String
+  passwordHash String
+  role         String
+  active       Boolean   @default(true)
+  sessions     Session[]
+  branchId     Int?
+  branch       Branch?   @relation(fields: [branchId], references: [id])
+  entries      AccountEntry[]
+  auditEvents  AuditEvent[]
+}
+
+model AuditEvent {
+  id        Int      @id @default(autoincrement())
+  actorId   Int
+  actor     User     @relation(fields: [actorId], references: [id], onDelete: Restrict)
+  action    String
+  targetId  Int
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model NewsletterSubscriber {
+  email        String   @id
+  subscribedAt DateTime @default(now())
+}
+
+model StoreProfile {
+  id           Int    @id
+  name         String
+  description  String
+  logoUrl      String
+  contactEmail String
+  contactPhone String
+  domain       String
+  primaryColor String
+  accentColor  String
+  shippingPolicy String
+  returnPolicy   String
+  privacyPolicy  String
+}
+
+model Branch {
+  id      Int            @id @default(autoincrement())
+  code    String         @unique
+  name    String
+  address String
+  active  Boolean        @default(true)
+  users   User[]
+  orders  Order[]
+  entries AccountEntry[]
+}
+
+model Partner {
+  id      Int     @id @default(autoincrement())
+  kind    String
+  name    String
+  email   String?
+  phone   String?
+  active  Boolean @default(true)
+
+  @@index([kind, id])
+}
+
+model AccountEntry {
+  id          Int      @id @default(autoincrement())
+  branchId    Int
+  branch      Branch   @relation(fields: [branchId], references: [id], onDelete: Restrict)
+  createdById Int
+  createdBy   User     @relation(fields: [createdById], references: [id], onDelete: Restrict)
+  kind        String
+  amountPaisa Int
+  memo        String
+  bookedOn    DateTime @db.Date
+  createdAt   DateTime @default(now())
+
+  @@index([branchId, bookedOn])
+}
+
+model Session {
+  tokenHash String   @id
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+
+  @@index([userId])
+}
+
+model LoginAttempt {
+  key         String   @id
+  count       Int
+  windowStart DateTime
+}
+
+model Coupon {
+  id      Int     @id @default(autoincrement())
+  code    String  @unique
+  percent Int
+  active  Boolean @default(true)
+}
+
+model Shipping {
+  id            Int @id
+  dhakaFee      Int @default(70)
+  outsideFee    Int @default(130)
+  freeThreshold Int @default(3000)
+}
+
+model Courier {
+  id       Int     @id
+  provider String
+  enabled  Boolean @default(false)
+}
