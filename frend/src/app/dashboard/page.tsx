@@ -7,6 +7,7 @@ import { DashboardOverview } from "./overview";
 import { BranchAccounts } from "./branch-accounts";
 import { dashboardRequest as api } from "./dashboard-api";
 import { OrderDocument } from "./order-document";
+import { PasswordInput } from "@/components/PasswordInput";
 
 type Row = Record<string, unknown> & { id?: number };
 type DashboardSession = { user: Row };
@@ -88,7 +89,8 @@ function ManagementForm({ section, row, save, busy, branches }: { section: Secti
         : kind === "boolean" ? <input type="checkbox" className="size-5" name={key} defaultChecked={Boolean(row[key] ?? key !== "featured")} />
         : Array.isArray(kind) ? <select className="store-select w-full" name={key} defaultValue={formatValue(row, key, kind)}>{kind.map((option: string) => <option key={option}>{option}</option>)}</select>
         : kind === "lines" || kind === "colors" || key === "description" || key.endsWith("Policy") ? <textarea className={inputStyle} name={key} rows={3} defaultValue={formatValue(row, key, kind)} />
-        : <input className={inputStyle} name={key} defaultValue={formatValue(row, key, kind)} type={kind === "number" ? "number" : kind === "password" ? "password" : key.toLowerCase().endsWith("email") ? "email" : key.endsWith("Color") ? "color" : "text"} min={kind === "number" ? 0 : undefined} minLength={kind === "password" ? 12 : undefined} required={!["compareAtPrice", "stockQuantity", "dimensions", "warranty", "phone", "domain"].includes(key) && !(key === "email" && ["vendors", "suppliers"].includes(section)) && !(kind === "password" && row.id)} />}
+        : kind === "password" ? <PasswordInput className={inputStyle} name={key} autoComplete="new-password" minLength={12} maxLength={128} required={!row.id} />
+        : <input className={inputStyle} name={key} defaultValue={formatValue(row, key, kind)} type={kind === "number" ? "number" : key.toLowerCase().endsWith("email") ? "email" : key.endsWith("Color") ? "color" : "text"} min={kind === "number" ? 0 : undefined} required={!["compareAtPrice", "stockQuantity", "dimensions", "warranty", "phone", "domain"].includes(key) && !(key === "email" && ["vendors", "suppliers"].includes(section))} />}
     </label>)}
     <div><button className={buttonStyle} disabled={busy}>Save changes</button></div>
   </form>;
@@ -214,7 +216,7 @@ export default function Dashboard() {
       });
     }}>
       <label className="block">Email<input name="email" type="email" autoComplete="username" className={inputStyle} required /></label>
-      <label className="block">Password<input name="password" type="password" autoComplete="current-password" className={inputStyle} required /></label>
+      <label className="block">Password<PasswordInput name="password" autoComplete="current-password" className={inputStyle} required /></label>
       {message}
       <button className={buttonStyle} disabled={busy}>Sign in</button>
     </form>
@@ -277,8 +279,8 @@ export default function Dashboard() {
         setNotice("Password changed. Sign in with your new password.");
       });
     }}>
-      <label>Current password<input name="currentPassword" type="password" autoComplete="current-password" className={inputStyle} required /></label>
-      <label>New password<input name="newPassword" type="password" autoComplete="new-password" className={inputStyle} minLength={12} required /></label>
+      <label>Current password<PasswordInput name="currentPassword" autoComplete="current-password" className={inputStyle} required /></label>
+      <label>New password<PasswordInput name="newPassword" autoComplete="new-password" className={inputStyle} minLength={12} required /></label>
       <div><button className={buttonStyle} disabled={busy}>Save password</button></div>
     </form>}
     {activeSection === "overview" && <DashboardOverview onSelect={selectSection} />}

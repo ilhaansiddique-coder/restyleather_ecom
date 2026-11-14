@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { customerRequest, type Customer } from "@/lib/customer-api";
 import { navigationText, type Locale } from "@/lib/locale";
+import { PasswordInput } from "./PasswordInput";
 
 const input = "w-full rounded-xl border border-stone-300 bg-white px-3 py-2.5 focus-visible:outline-2 focus-visible:outline-amber-600";
 const button = "btn-grad btn-grad--fit rounded-xl px-5 py-2.5 font-semibold text-white disabled:opacity-50";
@@ -77,7 +78,7 @@ export function CustomerAccount({ mode, locale }: { mode: "login" | "signup" | "
       <form onSubmit={submit} className="grid gap-4">
         {signup && <label className="grid gap-1">{bn ? "পুরো নাম" : "Full name"}<input className={input} name="name" autoComplete="name" maxLength={100} required /></label>}
         <label className="grid gap-1">{bn ? "ইমেইল" : "Email"}<input className={input} name="email" type="email" autoComplete="username" required /></label>
-        <label className="grid gap-1">{bn ? "পাসওয়ার্ড" : "Password"}<input className={input} name="password" type="password" autoComplete={signup ? "new-password" : "current-password"} minLength={signup ? 12 : undefined} maxLength={128} required />
+        <label className="grid gap-1">{bn ? "পাসওয়ার্ড" : "Password"}<PasswordInput className={input} name="password" autoComplete={signup ? "new-password" : "current-password"} minLength={signup ? 12 : undefined} maxLength={128} required />
           {signup && <span className="text-sm text-stone-600">{bn ? "কমপক্ষে ১২টি অক্ষর ব্যবহার করুন।" : "Use at least 12 characters."}</span>}
         </label>
         <button className={button} disabled={busy}>{signup ? labels.signup : labels.login}</button>

@@ -14,7 +14,8 @@
     "db:generate": "npm run db:generate --workspace bend",
     "db:migrate": "npm run db:migrate --workspace bend",
     "db:seed": "npm run db:seed --workspace bend",
-    "admin:create": "npm run admin:create --workspace bend"
+    "admin:create": "npm run admin:create --workspace bend",
+    "admin:reset": "npm run admin:reset --workspace bend"
   },
   "devDependencies": {
     "concurrently": "^9.2.1",

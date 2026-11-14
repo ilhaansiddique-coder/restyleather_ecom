@@ -12,6 +12,7 @@
     "db:migrate": "prisma migrate deploy",
     "db:seed": "prisma db seed",
     "admin:create": "tsx scripts/create-admin.ts",
+    "admin:reset": "tsx scripts/reset-admin.ts",
     "test:operations": "tsx --test tests/branch-operations.test.ts"
   },
   "dependencies": {
