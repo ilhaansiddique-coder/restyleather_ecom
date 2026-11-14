@@ -8,6 +8,7 @@ import { digest, hashPassword, newToken, verifyPassword } from "./security";
 import { couponCode, orderInput, placeOrder, quote, quoteInput, shippingDefaults, statuses } from "./commerce";
 import { audited, branchRole, businessOperations, isAdmin, recordId, roles, type ApiEnv as Env, type SessionUser } from "./business-operations";
 import { loadStoreProfile, storeProfileInput } from "./store-profile";
+import { webOrigins } from "./web-origins";
 
 const cookie = "resty_session";
 const customerCookie = "resty_customer_session";
@@ -328,18 +329,9 @@ app.use("*", async (c, next) => {
   const publicRead = c.req.method === "GET" && ["/api/v1/customer/auth/me", "/api/v1/store/shipping"].includes(c.req.path);
   if (!process.env.DATABASE_URL && !publicRead) return fail(c, "Database is not configured.", 503);
   const origin = c.req.header("origin");
-  const allowedOrigins = process.env.APP_ORIGIN
-    ? [process.env.APP_ORIGIN]
-    : ["http://localhost:3000", "http://127.0.0.1:3000", new URL(c.req.url).origin];
-  if (process.env.NODE_ENV !== "production") {
-    const loopback = /^(https?:\/\/)(localhost|127\.0\.0\.1|\[::1\])(:\d+)?$/.exec(allowedOrigins[0]);
-    if (loopback) {
-      const [, scheme, , port = ""] = loopback;
-      allowedOrigins.push(...["localhost", "127.0.0.1", "[::1]"].map((host) => scheme + host + port));
-    }
-  }
+  const allowedOrigins = webOrigins(process.env.APP_ORIGIN, new URL(c.req.url).origin, process.env.NODE_ENV === "production");
   const allowedMobile = c.req.path.startsWith("/api/v1/m/") && origin === mobileOrigin;
-  if (origin && !allowedOrigins.includes(origin) && !allowedMobile && !["GET", "HEAD", "OPTIONS"].includes(c.req.method)) return fail(c, "Cross-origin request blocked.", 403);
+  if (origin && !allowedOrigins.has(origin) && !allowedMobile && !["GET", "HEAD", "OPTIONS"].includes(c.req.method)) return fail(c, "Cross-origin request blocked.", 403);
   await next();
 });
 
